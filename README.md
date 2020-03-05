@@ -1,12 +1,12 @@
-bitcoind
+peercoind - Based off of toorop/go-bitcoind
 ===========
 
-A Golang client library wrapping the bitcoind JSON RPC API
+A Golang client library wrapping the peercoind JSON RPC API
 
 
 Installation
 -----
-	$ go get https://github.com/Toorop/go-bitcoind
+	$ go get https://github.com/saeveritt/go-peercoind
 
 
 Usage
@@ -15,7 +15,7 @@ Usage
 	package main
 
 	import (
-		"github.com/toorop/go-bitcoind"
+		"github.com/saeveritt/go-peercoind"
 		"log"
 	)
 
