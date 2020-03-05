@@ -21,7 +21,7 @@ type Block struct {
 	// The block version
 	Version uint32 `json:"version"`
 
-	VersionHex	string	`json:"versionHex`
+	VersionHex	string	`json:"versionHex"`
 
 	// The merkle root
 	Merkleroot string `json:"merkleroot"`
