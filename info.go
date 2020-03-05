@@ -1,54 +1,32 @@
 package bitcoind
 
-// An Info represent a response to getmininginfo
+// Info response for getblockchaininfo
 type Info struct {
-	// The server version
-	Version uint32 `json:"version"`
 
-	// The protocol version
-	Protocolversion uint32 `json:"protocolversion"`
+	Chain string `json:"chain"`
 
-	// The wallet version
-	Walletversion uint32 `json:"walletversion"`
-
-	// The total bitcoin balance of the wallet
-	Balance float64 `json:"balance"`
-
-	// The current number of blocks processed in the server
 	Blocks uint32 `json:"blocks"`
 
-	// The time offset
-	Timeoffset int32 `json:"timeoffset"`
+	Headers uint32 `json:"headers"`
 
-	// The number of connections
-	Connections uint32 `json:"connections"`
+	BestBlockHash string `json:"bestblockhash"`
 
-	// Tthe proxy used by the server
-	Proxy string `json:"proxy,omitempty"`
-
-	// Tthe current difficulty
 	Difficulty float64 `json:"difficulty"`
 
-	// If the server is using testnet or not
-	Testnet bool `json:"testnet"`
+	MedianTime uint64 `json:"mediantime"`
 
-	// The timestamp (seconds since GMT epoch) of the oldest pre-generated key in the key pool
-	Keypoololdest uint64 `json:"keypoololdest"`
+	VerificationProgress float64 `json:"verificationprogress"`
 
-	// How many new keys are pre-generated
-	KeypoolSize uint32 `json:"keypoolsize,omitempty"`
+	InitialBlockDownload bool `json:"initialblockdownload"`
 
-	// The timestamp in seconds since epoch (midnight Jan 1 1970 GMT) that the wallet is unlocked for transfers, or 0 if the wallet is locked
-	UnlockedUntil int64 `json:"unlocked_until,omitempty"`
+	ChainWork string `json:"chainwork"`
 
-	// the transaction fee set in btc/kb
-	Paytxfee float64 `json:"paytxfee"`
+	SizeOnDisk uint64 `json:"size_on_disk"`
 
-	// Minimum relay fee for non-free transactions in btc/kb
-	Relayfee float64 `json:"relayfee"`
+	Pruned	bool	`json:"pruned"`
 
-	//  Any error messages
-	Errors string `json:"errors"`
+	SoftForks []*SoftForks `json:"softforks"`
+
 }
 
 // WalletInfo - wallet state info
@@ -66,4 +44,14 @@ type WalletInfo struct {
 	UnlockedUntil         *int64  `json:"unlocked_until"`
 	PaytxFee              float64 `json:"paytxfee"`
 	HdMasterKeyID         *string `json:"hdmasterkeyid"`
+}
+
+type SoftForks struct{
+	ID string `json:"id"`
+	Version uint32 `json:"version"`
+	Reject	*Reject	`json:"reject"`
+}
+
+type Reject struct{
+	Status	bool `json:"status"`
 }

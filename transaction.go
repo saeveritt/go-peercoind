@@ -8,11 +8,12 @@ type ScriptSig struct {
 
 // Vin represent an IN value
 type Vin struct {
-	Coinbase  string    `json:"coinbase"`
-	Txid      string    `json:"txid"`
-	Vout      int       `json:"vout"`
-	ScriptSig ScriptSig `json:"scriptSig"`
-	Sequence  uint32    `json:"sequence"`
+	Coinbase  	string    	`json:"coinbase"`
+	Txid      	string    	`json:"txid"`
+	Vout      	int       	`json:"vout"`
+	ScriptSig 	ScriptSig 	`json:"scriptSig"`
+	Sequence  	uint32    	`json:"sequence"`
+	TxinWitness	[]string	`json:"txinwitness,omitempty"`
 }
 
 type ScriptPubKey struct {
@@ -32,42 +33,45 @@ type Vout struct {
 
 // RawTx represents a raw transaction
 type RawTransaction struct {
-	Hex           string `json:"hex"`
-	Txid          string `json:"txid"`
-	Version       uint32 `json:"version"`
-	LockTime      uint32 `json:"locktime"`
-	Vin           []Vin  `json:"vin"`
-	Vout          []Vout `json:"vout"`
-	BlockHash     string `json:"blockhash,omitempty"`
-	Confirmations uint64 `json:"confirmations,omitempty"`
-	Time          int64  `json:"time,omitempty"`
-	Blocktime     int64  `json:"blocktime,omitempty"`
+	InActiveChain	bool	`json:"in_active_chain,omitempty"`
+	Hex           	string 	`json:"hex"`
+	Txid          	string 	`json:"txid"`
+	Hash 			string	`json:"hash"`
+	Size 			int64	`json:"size"`
+	VSize			int64	`json:"vsize"`
+	Version       	uint32 	`json:"version"`
+	LockTime      	uint32 	`json:"locktime"`
+	Vin           	[]Vin  	`json:"vin"`
+	Vout          	[]Vout 	`json:"vout"`
+	BlockHash     	string 	`json:"blockhash,omitempty"`
+	Confirmations 	uint64 	`json:"confirmations,omitempty"`
+	Time          	int64  	`json:"time,omitempty"`
+	Blocktime     	int64  	`json:"blocktime,omitempty"`
 }
 
 // TransactionDetails represents details about a transaction
 type TransactionDetails struct {
-	Account  string  `json:"account"`
-	Address  string  `json:"address,omitempty"`
-	Category string  `json:"category"`
-	Amount   float64 `json:"amount"`
-	Fee      float64 `json:"fee,omitempty"`
+	Account  	string  `json:"account"`
+	Address  	string  `json:"address,omitempty"`
+	Category 	string  `json:"category"`
+	Amount   	float64 `json:"amount"`
+	Fee      	float64 `json:"fee,omitempty"`
+	Label	 	string	`json:"label,omitempty"`
+	Vout	 	int32	`json:"vout"`
+	Abandoned	bool 	`json:"abandoned,omitempty"`
 }
 
 // Transaction represents a transaction
 type Transaction struct {
 	Amount          float64              `json:"amount"`
-	Account         string               `json:"account,omitempty"`
-	Address         string               `json:"address,omitempty"`
-	Category        string               `json:"category,omitempty"`
 	Fee             float64              `json:"fee,omitempty"`
 	Confirmations   int64                `json:"confirmations"`
 	BlockHash       string               `json:"blockhash"`
 	BlockIndex      int64                `json:"blockindex"`
 	BlockTime       int64                `json:"blocktime"`
 	TxID            string               `json:"txid"`
-	WalletConflicts []string             `json:"walletconflicts"`
-	Time            int64                `json:"time"`
-	TimeReceived    int64                `json:"timereceived"`
+	Time			int64				 `json:"time"`
+	TimeReceived	int64				 `json:"timereceived"`
 	Details         []TransactionDetails `json:"details,omitempty"`
 	Hex             string               `json:"hex,omitempty"`
 }
@@ -88,7 +92,8 @@ type TransactionOutSet struct {
 	Bestblock       string  `json:"bestblock"`
 	Transactions    float64 `json:"transactions"`
 	TxOuts          float64 `json:"txouts"`
-	BytesSerialized float64 `json:"bytes_serialized"`
-	HashSerialized  string  `json:"hash_serialized"`
+	Bogosize		uint64	`json:"bogosize"`
+	HashSerialized2 string  `json:"hash_serialized_2"`
+	DiskSize		uint64	`json:"disk_size"`
 	TotalAmount     float64 `json:"total_amount"`
 }

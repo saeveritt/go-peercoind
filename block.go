@@ -11,11 +11,17 @@ type Block struct {
 	// The block size
 	Size uint64 `json:"size"`
 
+	StrippedSize	uint64	`json:"strippedsize"`
+
+	Weight			uint64	`json:"weight"`
+
 	// The block height or index
 	Height uint64 `json:"height"`
 
 	// The block version
 	Version uint32 `json:"version"`
+
+	VersionHex	string	`json:"versionHex`
 
 	// The merkle root
 	Merkleroot string `json:"merkleroot"`
@@ -25,6 +31,9 @@ type Block struct {
 
 	// The block time in seconds since epoch (Jan 1 1970 GMT)
 	Time int64 `json:"time"`
+
+	// The median block time in seconds since epoch Jan 1 1970 GMT
+	MedianTime	int64	`json:"mediantime"`
 
 	// The nonce
 	Nonce uint64 `json:"nonce"`
@@ -37,6 +46,9 @@ type Block struct {
 
 	// Total amount of work in active chain, in hexadecimal
 	Chainwork string `json:"chainwork,omitempty"`
+
+	// The number of transactions in the block
+	NTx 	int32	`json:"nTx"`
 
 	// The hash of the previous block
 	Previousblockhash string `json:"previousblockhash"`

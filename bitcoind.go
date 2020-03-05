@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	// VERSION represents bicoind package version
+	// VERSION represents bitcoind package version
 	VERSION = 0.1
 	// DEFAULT_RPCCLIENT_TIMEOUT represent http timeout for rcp client
 	RPCCLIENT_TIMEOUT = 30
@@ -115,7 +115,7 @@ type BlockHeader struct {
 	Bits              uint32
 	Difficulty        float64
 	Chainwork         string
-	Txes              int    `json:"nTx"`
+	NTx               int    `json:"nTx"`
 	Previousblockhash string `json:"omitempty"`
 	Nextblockhash     string `json:"omitempty"`
 }
@@ -234,30 +234,27 @@ func (b *Bitcoind) GetConnectionCount() (count uint64, err error) {
 	return
 }
 
+type Difficulty struct{
+	ProofofWork		float64		`json:"proof-of-work"`
+	ProofofStake	float64		`json:"proof-of-stake"`
+	SearchInterval	uint32		`json:"search-interval"`
+}
+
+
 // GetDifficulty returns the proof-of-work difficulty as a multiple of
 // the minimum difficulty.
-func (b *Bitcoind) GetDifficulty() (difficulty float64, err error) {
+func (b *Bitcoind) GetDifficulty() (difficulty Difficulty, err error) {
 	r, err := b.client.call("getdifficulty", nil)
 	if err = handleError(err, &r); err != nil {
 		return
 	}
-	difficulty, err = strconv.ParseFloat(string(r.Result), 64)
-	return
-}
-
-// GetGenerate returns true or false whether bitcoind is currently generating hashes
-func (b *Bitcoind) GetGenerate() (generate bool, err error) {
-	r, err := b.client.call("getgenerate", nil)
-	if err = handleError(err, &r); err != nil {
-		return
-	}
-	err = json.Unmarshal(r.Result, &generate)
+	err = json.Unmarshal(r.Result, &difficulty)
 	return
 }
 
 // GetHashesPerSec returns a recent hashes per second performance measurement while generating.
 func (b *Bitcoind) GetHashesPerSec() (hashpersec float64, err error) {
-	r, err := b.client.call("gethashespersec", nil)
+	r, err := b.client.call("getnetworkhashps", nil)
 	if err = handleError(err, &r); err != nil {
 		return
 	}
@@ -267,7 +264,7 @@ func (b *Bitcoind) GetHashesPerSec() (hashpersec float64, err error) {
 
 // GetInfo return result of "getinfo" command (Amazing !)
 func (b *Bitcoind) GetInfo() (i Info, err error) {
-	r, err := b.client.call("getinfo", nil)
+	r, err := b.client.call("getblockchaininfo", nil)
 	if err = handleError(err, &r); err != nil {
 		return
 	}
@@ -363,8 +360,6 @@ type VerboseTx struct {
 	WTxId string
 	// Unconfirmed transactions used as inputs for this transaction
 	Depends []string
-	// Used by Bitcoin Unlimited RPC
-	SpentBy []string
 }
 
 // GetRawMempoolVerbose returns a verbose set of transactions
@@ -454,36 +449,6 @@ func (b *Bitcoind) GetTxOutsetInfo() (txOutSet TransactionOutSet, err error) {
 		return
 	}
 	err = json.Unmarshal(r.Result, &txOutSet)
-	return
-}
-
-// GetWork
-// If [data] is not specified, returns formatted hash data to work on
-// If [data] is specified, tries to solve the block and returns true if it was successful.
-func (b *Bitcoind) GetWork(data ...string) (response interface{}, err error) {
-	if len(data) > 1 {
-		err = errors.New("Bad parameters for GetWork: you can set 0 or 1 parameter data")
-		return
-	}
-	var r rpcResponse
-
-	if len(data) == 0 {
-		r, err = b.client.call("getwork", nil)
-		if err = handleError(err, &r); err != nil {
-			return
-		}
-		var work Work
-		err = json.Unmarshal(r.Result, &work)
-		response = work
-	} else {
-		r, err = b.client.call("getwork", data)
-		if err = handleError(err, &r); err != nil {
-			return
-		}
-		var t bool
-		err = json.Unmarshal(r.Result, &t)
-		response = t
-	}
 	return
 }
 
@@ -728,19 +693,6 @@ func (b *Bitcoind) SetAccount(address, account string) error {
 	return handleError(err, &r)
 }
 
-// SetGenerate turns generation on or off.
-// Generation is limited to [genproclimit] processors, -1 is unlimited.
-func (b *Bitcoind) SetGenerate(generate bool, genProcLimit int32) error {
-	r, err := b.client.call("setgenerate", []interface{}{generate, genProcLimit})
-	return handleError(err, &r)
-}
-
-// SetTxFee set the transaction fee per kB
-func (b *Bitcoind) SetTxFee(amount float64) error {
-	r, err := b.client.call("settxfee", []interface{}{amount})
-	return handleError(err, &r)
-}
-
 // Stop stop bitcoin server.
 func (b *Bitcoind) Stop() error {
 	r, err := b.client.call("stop", nil)
@@ -769,13 +721,25 @@ func (b *Bitcoind) VerifyMessage(address, sign, message string) (success bool, e
 
 // ValidateAddressResponse represents a response to "validateaddress" call
 type ValidateAddressResponse struct {
-	IsValid      bool   `json:"isvalid"`
-	Address      string `json:"address"`
-	IsMine       bool   `json:"ismine"`
-	IsScript     bool   `json:"isscript"`
-	PubKey       string `json:"pubkey"`
-	IsCompressed bool   `json:"iscompressed"`
-	Account      string `json:"account"`
+	IsValid      		bool   		`json:"isvalid"`
+	Address      		string 		`json:"address"`
+	IsMine       		bool   		`json:"ismine"`
+	IsWatchOnly   	    bool   		`json:"iswatchonly"`
+	IsScript     		bool   		`json:"isscript"`
+	IsWitness			bool		`json:"iswitness"`
+	WitnessVersion		uint32		`json:"witness_version"`
+	WitnessProgram		string		`json:"witness_program"`
+	Script 				string		`json:"script"`
+	Hex 				string		`json:"hex"`
+	Addresses			[]string	`json:"addresses"`
+	Pubkeys				[]string	`json:"pubkeys"`
+	SigsRequired		uint32		`json:"sigsrequired"`
+	PubKey       		string 		`json:"pubkey"`
+	IsCompressed 		bool   		`json:"iscompressed"`
+	Account      		string 		`json:"account"`
+	Timestamp			uint64		`json:"timestamp"`
+	HDKeyPath			string		`json:"hdkeypath"`
+	HDMasterKeyID		string		`json:"hdmasterkeyid"`
 }
 
 // ValidateAddress return information about <bitcoinaddress>.
@@ -805,48 +769,6 @@ func (b *Bitcoind) WalletPassphrase(passPhrase string, timeout uint64) error {
 func (b *Bitcoind) WalletPassphraseChange(oldPassphrase, newPassprhase string) error {
 	r, err := b.client.call("walletpassphrasechange", []interface{}{oldPassphrase, newPassprhase})
 	return handleError(err, &r)
-}
-
-// estimatesmartfee mode
-// https://bitcoincore.org/en/doc/0.16.0/rpc/util/estimatesmartfee/
-const (
-	ESTIMATE_MODE_UNSET        string = "UNSET"
-	ESTIMATE_MODE_ECONOMICAL   string = "ECONOMICAL"
-	ESTIMATE_MODE_CONSERVATIVE string = "CONSERVATIVE"
-)
-
-// EstimateSmartFeeResult result for call estimatesmartfee
-// https://bitcoincore.org/en/doc/0.16.0/rpc/util/estimatesmartfee/
-type EstimateSmartFeeResult struct {
-	FeeRate float64  `json:"feerate"`
-	Errors  []string `json:"errors"`
-	Blocks  int      `json:"blocks"`
-}
-
-// EstimateSmartFee stimates the approximate fee per kilobyte needed for a transaction..
-// https://bitcoincore.org/en/doc/0.16.0/rpc/util/estimatesmartfee/
-func (b *Bitcoind) EstimateSmartFee(minconf int) (ret EstimateSmartFeeResult, err error) {
-
-	r, err := b.client.call("estimatesmartfee", []interface{}{minconf})
-	if err = handleError(err, &r); err != nil {
-		return
-	}
-
-	err = json.Unmarshal(r.Result, &ret)
-	return
-}
-
-// EstimateSmartFee stimates the approximate fee per kilobyte needed for a transaction..
-// https://bitcoincore.org/en/doc/0.16.0/rpc/util/estimatesmartfee/
-func (b *Bitcoind) EstimateSmartFeeWithMode(minconf int, mode string) (ret EstimateSmartFeeResult, err error) {
-
-	r, err := b.client.call("estimatesmartfee", []interface{}{minconf, mode})
-	if err = handleError(err, &r); err != nil {
-		return
-	}
-
-	err = json.Unmarshal(r.Result, &ret)
-	return
 }
 
 // GetWalletInfo - Returns an object containing various wallet state info.

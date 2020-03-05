@@ -1,14 +1,21 @@
 package bitcoind
 
 type Peer struct {
+
+	ID	int32	`json:"id"`
+
 	// The ip address and port of the peer
 	Addr string `json:"addr"`
 
 	// Local address
 	Addrlocal string `json:"addrlocal"`
 
+	AddrBind  string  `json:"addrbind"`
+
 	// The services
 	Services string `json:"services"`
+
+	RelayTxes	bool `json:"relaytxes"`
 
 	// The time in seconds since epoch (Jan 1 1970 GMT) of the last send
 	Lastsend uint64 `json:"lastsend"`
@@ -25,6 +32,8 @@ type Peer struct {
 	// The connection time in seconds since epoch (Jan 1 1970 GMT)
 	Conntime uint64 `json:"conntime"`
 
+	TimeOffset int64	`json:"timeoffset"`
+
 	// Ping time
 	Pingtime float64 `json:"pingtime"`
 
@@ -40,12 +49,20 @@ type Peer struct {
 	// Inbound (true) or Outbound (false)
 	Inbound bool `json:"inbound"`
 
+	AddNode	bool	`json:"addnode"`
+
 	//  The starting height (block) of the peer
 	Startingheight int32 `json:"startingheight"`
 
 	// The ban score (stats.nMisbehavior)
 	Banscore int32 `json:"banscore"`
 
+	SyncedHeaders	int32 `json:"synced_headers"`
+
+	SyncedBlocks	int32 `json:"synced_blocks"`
+
+	WhiteListed		bool	`json:"whitelisted"`
+
 	// If sync node
-	Syncnode bool `json:"syncnode"`
+	Syncnode bool `json:"syncnode,omitempty"`
 }
