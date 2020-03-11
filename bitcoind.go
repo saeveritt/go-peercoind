@@ -375,7 +375,7 @@ func (b *Bitcoind) GetRawMempoolVerbose() (txs map[string]VerboseTx, err error) 
 }
 
 // GetRawTransaction returns raw transaction representation for given transaction id.
-func (b *Bitcoind) GetRawTransaction(txId string, verbose bool) (rawTx interface{}, err error) {
+func (b *Bitcoind) GetRawTransaction(txId string, verbose bool) (rawTx RawTransaction, err error) {
 	intVerbose := 0
 	if verbose {
 		intVerbose = 1
