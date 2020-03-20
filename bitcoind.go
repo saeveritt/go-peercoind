@@ -462,7 +462,7 @@ func (b *Bitcoind) ImportPrivKey(privKey, label string, rescan bool) error {
 	return handleError(err, &r)
 }
 
-func (b *Bitcoind) RescanBlockchain(startheight string) error {
+func (b *Bitcoind) RescanBlockchain(startheight uint64) error {
 	r, err := b.client.call("rescanblockchain", []interface{}{startheight})
 	return handleError(err, &r)
 }
