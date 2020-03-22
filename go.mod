@@ -1,4 +1,4 @@
-module github.com/vpashka/go-bitcoind
+module github.com/saeveritt/go-peercoind
 
 go 1.13
 
