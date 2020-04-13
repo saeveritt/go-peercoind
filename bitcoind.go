@@ -641,6 +641,16 @@ func (b *Bitcoind) SendFrom(fromAccount, toAddress string, amount float64, minco
 	}
 	err = json.Unmarshal(r.Result, &txID)
 	return
+	return
+}
+
+func (b *Bitcoind) SendRawTransaction(rawTransaction string) (response string, err error){
+	r, err := b.client.call("sendrawtransaction", rawTransaction)
+	if err = handleError(err, &r); err != nil{
+		return
+	}
+	err = json.Unmarshal(r.Result, &response)
+	return
 }
 
 // SenMany send multiple times
