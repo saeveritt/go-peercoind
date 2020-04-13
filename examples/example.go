@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/toorop/go-bitcoind"
+	"github.com/saeveritt/go-peercoind"
 	"log"
 )
 
