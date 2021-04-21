@@ -104,11 +104,13 @@ func (b *Bitcoind) GetBalance(account string, minconf uint64) (balance float64, 
 
 type BlockHeader struct {
 	Hash              string
+	Flags             string
 	Confirmations     int
 	Height            int
 	Version           uint32
 	VersionHex        string
 	Merkleroot        string
+	Mint              float32
 	Time              int64
 	Mediantime        int64
 	Nonce             uint32
@@ -234,12 +236,11 @@ func (b *Bitcoind) GetConnectionCount() (count uint64, err error) {
 	return
 }
 
-type Difficulty struct{
-	ProofofWork		float64		`json:"proof-of-work"`
-	ProofofStake	float64		`json:"proof-of-stake"`
-	SearchInterval	uint32		`json:"search-interval"`
+type Difficulty struct {
+	ProofofWork    float64 `json:"proof-of-work"`
+	ProofofStake   float64 `json:"proof-of-stake"`
+	SearchInterval uint32  `json:"search-interval"`
 }
-
 
 // GetDifficulty returns the proof-of-work difficulty as a multiple of
 // the minimum difficulty.
@@ -467,7 +468,6 @@ func (b *Bitcoind) RescanBlockchain(startheight uint64) error {
 	return handleError(err, &r)
 }
 
-
 // KeyPoolRefill fills the keypool, requires wallet passphrase to be set.
 func (b *Bitcoind) KeyPoolRefill() error {
 	r, err := b.client.call("keypoolrefill", nil)
@@ -644,9 +644,9 @@ func (b *Bitcoind) SendFrom(fromAccount, toAddress string, amount float64, minco
 	return
 }
 
-func (b *Bitcoind) SendRawTransaction(rawTransaction string) (response string, err error){
+func (b *Bitcoind) SendRawTransaction(rawTransaction string) (response string, err error) {
 	r, err := b.client.call("sendrawtransaction", rawTransaction)
-	if err = handleError(err, &r); err != nil{
+	if err = handleError(err, &r); err != nil {
 		return
 	}
 	err = json.Unmarshal(r.Result, &response)
@@ -737,25 +737,25 @@ func (b *Bitcoind) VerifyMessage(address, sign, message string) (success bool, e
 
 // ValidateAddressResponse represents a response to "validateaddress" call
 type ValidateAddressResponse struct {
-	IsValid      		bool   		`json:"isvalid"`
-	Address      		string 		`json:"address"`
-	IsMine       		bool   		`json:"ismine"`
-	IsWatchOnly   	    bool   		`json:"iswatchonly"`
-	IsScript     		bool   		`json:"isscript"`
-	IsWitness			bool		`json:"iswitness"`
-	WitnessVersion		uint32		`json:"witness_version"`
-	WitnessProgram		string		`json:"witness_program"`
-	Script 				string		`json:"script"`
-	Hex 				string		`json:"hex"`
-	Addresses			[]string	`json:"addresses"`
-	Pubkeys				[]string	`json:"pubkeys"`
-	SigsRequired		uint32		`json:"sigsrequired"`
-	PubKey       		string 		`json:"pubkey"`
-	IsCompressed 		bool   		`json:"iscompressed"`
-	Account      		string 		`json:"account"`
-	Timestamp			uint64		`json:"timestamp"`
-	HDKeyPath			string		`json:"hdkeypath"`
-	HDMasterKeyID		string		`json:"hdmasterkeyid"`
+	IsValid        bool     `json:"isvalid"`
+	Address        string   `json:"address"`
+	IsMine         bool     `json:"ismine"`
+	IsWatchOnly    bool     `json:"iswatchonly"`
+	IsScript       bool     `json:"isscript"`
+	IsWitness      bool     `json:"iswitness"`
+	WitnessVersion uint32   `json:"witness_version"`
+	WitnessProgram string   `json:"witness_program"`
+	Script         string   `json:"script"`
+	Hex            string   `json:"hex"`
+	Addresses      []string `json:"addresses"`
+	Pubkeys        []string `json:"pubkeys"`
+	SigsRequired   uint32   `json:"sigsrequired"`
+	PubKey         string   `json:"pubkey"`
+	IsCompressed   bool     `json:"iscompressed"`
+	Account        string   `json:"account"`
+	Timestamp      uint64   `json:"timestamp"`
+	HDKeyPath      string   `json:"hdkeypath"`
+	HDMasterKeyID  string   `json:"hdmasterkeyid"`
 }
 
 // ValidateAddress return information about <bitcoinaddress>.
